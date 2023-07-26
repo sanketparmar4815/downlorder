@@ -42,13 +42,13 @@ dependencies:
   package_info_plus: ^4.0.2
   path: ^1.8.3
   path_provider:
-
   flutter_insta:
   permission_handler:
   shared_preferences: ^2.2.0
   video_player: ^2.7.0
   gallery_saver: ^2.3.2
   share_plus: ^7.0.2
+  flutter_staggered_grid_view: ^0.6.2
 
 
 

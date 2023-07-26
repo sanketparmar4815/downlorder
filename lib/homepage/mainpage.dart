@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:chewie/chewie.dart';
+import 'package:downlorder/homepage/downlorder%20page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:path/path.dart' as path;
 import 'package:permission_handler/permission_handler.dart';
@@ -25,14 +27,15 @@ class _MainHomePageState extends State<MainHomePage> {
   @override
   void initState() {
     super.initState();
+    isLoading = false;
     forpermission();
   }
 
   @override
   void dispose() {
     super.dispose();
-    videoPlayerController!.dispose();
-    chewieController!.dispose();
+    videoPlayerController?.dispose();
+    chewieController?.dispose();
   }
 
   VideoPlayerController? videoPlayerController;
@@ -44,81 +47,164 @@ class _MainHomePageState extends State<MainHomePage> {
   @override
   Widget build(BuildContext context) {
     print("----------hh---------------${widget.selectedScreenIndex}");
-
     return Scaffold(
       body: isLoading
-          ? ListView.builder(
-              physics: const BouncingScrollPhysics(),
-              itemCount: filesList.length,
-              itemBuilder: (context, index) {
-                if (isImageOrVideoFile(filesList[index].path) != null) {
-                  if (isImageOrVideoFile(filesList[index].path)!) {
-                    return Visibility(
-                      visible: widget.selectedScreenIndex == 0 ||
-                          widget.selectedScreenIndex == 1,
-                      child: Card(
-                        elevation: 5,
-                        margin: const EdgeInsets.all(10),
-                        child: Container(
-                          margin: const EdgeInsets.all(10) +
-                              const EdgeInsets.symmetric(horizontal: 5),
-                          height: 200,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 4,
-                                child: SizedBox(
-                                  child: Image.file(filesList[index]),
-                                ),
+          ? Container(
+                child: MasonryGridView.builder(
+                  cacheExtent: 999999,
+
+                  gridDelegate:
+                     SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                         crossAxisCount: 2,
+                         
+                         ),
+                physics:  BouncingScrollPhysics(),
+                itemCount: filesList.length,
+                // crossAxisCount: 2,
+                itemBuilder: (context, index) {
+                  if (isImageOrVideoFile(filesList[index].path) != null) {
+                    if (isImageOrVideoFile(filesList[index].path)!) {
+                      return Visibility(
+                        visible: widget.selectedScreenIndex == 0 ||
+                            widget.selectedScreenIndex == 1,
+                        child: InkWell(
+                          onTap: () {
+                            print("click on photo");
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) {
+                                return Status_downlorder(filesList[index]);
+                              },
+                            ));
+                          },
+                          child: Card(
+                            elevation: 5,
+                            child: Container(
+                              margin: const EdgeInsets.all(10) +
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              // height: 200,
+                              child: SizedBox(
+                                child: Image.file(filesList[index]),
                               ),
-                              const SizedBox(width: 10),
-                              options(index)
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  } else {
-                    return Visibility(
-                      visible: widget.selectedScreenIndex == 0 ||
-                          widget.selectedScreenIndex == 2,
-                      child: Card(
-                        elevation: 5,
-                        child: Container(
-                          margin: const EdgeInsets.all(10) +
-                              const EdgeInsets.symmetric(horizontal: 5),
-                          height: 200,
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: SizedBox(
-                                  height: 200,
-                                  child: Chewie(
-                                    controller: ChewieController(
-                                      videoPlayerController:
-                                          VideoPlayerController.file(
-                                        filesList[index],
-                                      ),
-                                      autoInitialize: true,
-                                    ),
+                      );
+                    } else {
+                      final videoPlayerController =
+                          VideoPlayerController.file(filesList[index]);
+                      return Visibility(
+                        visible: widget.selectedScreenIndex == 0 ||
+                            widget.selectedScreenIndex == 2,
+                        child: InkWell(
+                          onTap: () {
+                            print("Click on video");
+                          },
+                          child: Card(
+                            elevation: 5,
+                            child: Container(
+                              // margin: const EdgeInsets.all(10) +
+                              //     const EdgeInsets.symmetric(horizontal: 5),
+                              child: AspectRatio(
+                                aspectRatio:
+                                    videoPlayerController.value.aspectRatio,
+                                child: Chewie(
+                                  controller: ChewieController(
+                                    aspectRatio:
+                                        videoPlayerController.value.aspectRatio,
+                                    videoPlayerController:
+                                        videoPlayerController,
+                                    // autoInitialize: true,
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 10),
-                              options(index)
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
+                      );
+                    }
+                  } else {
+                    return const SizedBox.shrink();
                   }
-                } else {
-                  return const SizedBox.shrink();
-                }
-              },
+                },
+              ),
             )
           : const Center(child: CircularProgressIndicator()),
     );
+
+//     return Scaffold(
+//       body: isLoading
+//           ? ListView.builder(
+//         physics: const BouncingScrollPhysics(),
+//         itemCount: filesList.length,
+//         itemBuilder: (context, index) {
+//           if (isImageOrVideoFile(filesList[index].path) != null) {
+//             if (isImageOrVideoFile(filesList[index].path)!) {
+//               return MasonryGridView.builder(
+// shrinkWrap: true,
+//                   gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+//                       crossAxisCount: 2,),
+//                 itemCount: filesList.length,
+//                 itemBuilder: (context, index) {
+//
+//                 return Visibility(
+//
+//                   visible: widget.selectedScreenIndex == 0 ||
+//                       widget.selectedScreenIndex == 1,
+//                   child: Container(
+//                     margin: const EdgeInsets.all(10) +
+//                         const EdgeInsets.symmetric(horizontal: 5),
+//                     // height: 200,
+//                     child: SizedBox(
+//                       child: Image.file(filesList[index ]),
+//                     ),
+//                   ),
+//                 );
+//               },);
+//             } else {
+//               return StaggeredGrid.count(
+//                   crossAxisCount: 2,
+//                   children: [Visibility(
+//                     visible: widget.selectedScreenIndex == 0 ||
+//                         widget.selectedScreenIndex == 2,
+//                     child: Card(
+//                       elevation: 5,
+//                       child: Container(
+//                         margin: const EdgeInsets.all(10) +
+//                             const EdgeInsets.symmetric(horizontal: 5),
+//                         height: 200,
+//                         child: Row(
+//                           children: [
+//                             Expanded(
+//                               child: SizedBox(
+//                                 height: 200,
+//                                 child: Chewie(
+//                                   controller: ChewieController(
+//                                     videoPlayerController:
+//                                     VideoPlayerController.file(
+//                                       filesList[index],
+//                                     ),
+//                                     autoInitialize: true,
+//                                   ),
+//                                 ),
+//                               ),
+//                             ),
+//                             const SizedBox(width: 10),
+//                             // options(index)
+//                           ],
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                   ]
+//               );
+//             }
+//           } else {
+//             return const SizedBox.shrink();
+//           }
+//         },
+//       )
+//           : const Center(child: CircularProgressIndicator()),
+//     );
   }
 
   Future<void> forpermission() async {

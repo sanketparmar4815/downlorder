@@ -53,7 +53,7 @@ class _OtherPageState extends State<OtherPage> {
                         // ignore: inference_failure_on_instance_creation
                         MaterialPageRoute(
                           builder: (context) {
-                            return const InstagramPage();
+                            return  InstagramPage(0);
                           },
                         ),
                       );
@@ -85,7 +85,7 @@ class _OtherPageState extends State<OtherPage> {
                         // ignore: inference_failure_on_instance_creation
                         MaterialPageRoute(
                           builder: (context) {
-                            return const InstagramPage();
+                            return  InstagramPage(1);
                           },
                         ),
                       );
@@ -107,4 +107,8 @@ class _OtherPageState extends State<OtherPage> {
       ),
     );
   }
+
+
+
+
 }

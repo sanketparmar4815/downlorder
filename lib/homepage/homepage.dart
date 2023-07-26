@@ -100,17 +100,17 @@ class _HomepageState extends State<Homepage> {
           ),
         )
             : null,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-
-            await locator<SharedPreferences>().setString("abc", "hello sanket");
-            await locator<SharedPreferences>().setString("appName","$appName" );
-            await locator<SharedPreferences>().setString("packageName","$packageName" );
-            await locator<SharedPreferences>().setString("version","$version" );
-            await locator<SharedPreferences>().setString("buildNumber","$buildNumber" );
-            await locator<SharedPreferences>().setString("buildSignature","$buildSignature" );
-          },
-        ),
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: () async {
+        //
+        //     await locator<SharedPreferences>().setString("abc", "hello sanket");
+        //     await locator<SharedPreferences>().setString("appName","$appName" );
+        //     await locator<SharedPreferences>().setString("packageName","$packageName" );
+        //     await locator<SharedPreferences>().setString("version","$version" );
+        //     await locator<SharedPreferences>().setString("buildNumber","$buildNumber" );
+        //     await locator<SharedPreferences>().setString("buildSignature","$buildSignature" );
+        //   },
+        // ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: selectedScreenIndex,
           onTap: selectScreen,

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-
 class InstagramPage extends StatefulWidget {
-  const InstagramPage({super.key});
+  int i;
+
+  InstagramPage(this.i);
 
   @override
   State<InstagramPage> createState() => _InstagramPageState();
@@ -11,16 +12,16 @@ class InstagramPage extends StatefulWidget {
 
 class _InstagramPageState extends State<InstagramPage> {
   TextEditingController link = TextEditingController();
+  String varify = "https://www.instagram.com/reel/CvC1v3wqAxy/?igshid=MzRlODBiNWFlZA==";
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
   }
 
   @override
   Widget build(BuildContext context) {
+    print("---- ---- --- --- ${widget.i}");
     return Scaffold(
       body: Column(
         children: [
@@ -39,7 +40,8 @@ class _InstagramPageState extends State<InstagramPage> {
                     // await Clipboard.setData(const ClipboardData(text: '123'));
                     final data = await Clipboard.getData(Clipboard.kTextPlain);
                     setState(() {
-                      link.text = data!.text.toString(); // this will paste "copied text" to textFieldController
+                      link.text = data!.text
+                          .toString(); // this will paste "copied text" to textFieldController
                     });
                   },
                   icon: const Icon(Icons.paste),
@@ -80,13 +82,39 @@ class _InstagramPageState extends State<InstagramPage> {
                   color: Colors.black,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Center(
-                  child: Text(
-                    "DOWNLORD",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+                child: GestureDetector(
+                  onTap: () {
+                    if (widget.i == 0) {
+                      if (ifInstagramFacebookreels(link.text) == true) {
+                        print(" iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii ");
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    "This url is not found in instagram",),),);
+                      }
+                    } else if (widget.i == 1) {
+                      if (ifInstagramFacebookreels(link.text) == false) {
+                        print(" ffffffffffffffffffffffffffffffffffffff ");
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content:
+                                    Text("This url is not found in facebook"),),);
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text("This url is not found "),),);
+                    }
+                  },
+                  child: const Center(
+                    child: Text(
+                      "DOWNLORD",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -97,4 +125,42 @@ class _InstagramPageState extends State<InstagramPage> {
       ),
     );
   }
+
+
+  bool? ifInstagramFacebookreels(String url) {
+    final instagramReelsRegex = RegExp(
+      r'^https?:\/\/(?:www\.)?instagram\.com\/(?:[a-zA-Z0-9_\.]+)\/reel\/?$',
+      caseSensitive: false,
+    );
+
+    final facebookReelsRegex = RegExp(
+      r'^https?:\/\/(?:www\.)?facebook\.com\/(?:watch\/\?v=|video\.php\?v=)([0-9]+)\/?$',
+      caseSensitive: false,
+    );
+
+    if (instagramReelsRegex.hasMatch(url)) {
+      return true;
+    } else if (facebookReelsRegex.hasMatch(url)) {
+      return false;
+    } else {
+      return null;
+    }
+  }
+
+// void main() {
+//   String url1 = 'https://www.instagram.com/username/reel/';
+//   String url2 = 'https://www.facebook.com/watch/?v=123456789/';
+//   String url3 = 'https://www.youtube.com/watch?v=abcdefghijk/';
+//   String url4 = 'https://www.google.com/';
+//
+//   print(isInstagramReels(url1)); // Output: true
+//   print(isInstagramReels(url2)); // Output: false
+//   print(isInstagramReels(url3)); // Output: false
+//   print(isInstagramReels(url4)); // Output: false
+//
+//   print(isFacebookReels(url1)); // Output: false
+//   print(isFacebookReels(url2)); // Output: true
+//   print(isFacebookReels(url3)); // Output: false
+//   print(isFacebookReels(url4)); // Output: false
+// }
 }
