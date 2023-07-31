@@ -151,19 +151,7 @@ class _MainHomePageState extends State<MainHomePage>
           return true;
         }
       },
-        // onWillPop: () {
-        //   DateTime now = DateTime.now();
-        //   if (ctime == null || now.difference(ctime) > Duration(seconds: 2)) {
-        //
-        //     ctime = now;
-        //     ScaffoldMessenger.of(context).showSnackBar(
-        //         SnackBar(content: Text('Press Back Button Again to Exit'))
-        //     ); //scaffold message, you can show Toast message too.
-        //     return Future.value(false);
-        //   }
-        //
-        //   return Future.value(true);
-        // },
+
 
     );
 
