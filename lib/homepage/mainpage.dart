@@ -1,14 +1,10 @@
 import 'dart:io';
 
-import 'package:chewie/chewie.dart';
-import 'package:downlorder/homepage/downlorder%20page.dart';
+import 'package:downlorder/homepage/downlorder_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:gallery_saver/gallery_saver.dart';
 import 'package:path/path.dart' as path;
 import 'package:permission_handler/permission_handler.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:video_player/video_player.dart';
 
 class MainHomePage extends StatefulWidget {
   const MainHomePage({required this.selectedScreenIndex, super.key});
@@ -19,195 +15,161 @@ class MainHomePage extends StatefulWidget {
   State<MainHomePage> createState() => _MainHomePageState();
 }
 
-class _MainHomePageState extends State<MainHomePage> {
+class _MainHomePageState extends State<MainHomePage>
+    with AutomaticKeepAliveClientMixin {
   bool isLoading = false;
 
   List<File> filesList = [];
 
   @override
-  void initState() {
-    super.initState();
-    isLoading = false;
-    forpermission();
-  }
+  bool get wantKeepAlive => true;
 
   @override
-  void dispose() {
-    super.dispose();
-    videoPlayerController?.dispose();
-    chewieController?.dispose();
+  void initState() {
+    super.initState();
+    isLoading = true;
+    askPermission();
   }
-
-  VideoPlayerController? videoPlayerController;
-  ChewieController? chewieController;
 
   String firstButtonText = 'Take photo';
   String secondButtonText = 'Record video';
 
+
+
+  DateTime pre_backpress = DateTime.now();
   @override
   Widget build(BuildContext context) {
-    print("----------hh---------------${widget.selectedScreenIndex}");
-    return Scaffold(
+    super.build(context);
+    // print("----------hh---------------${widget.selectedScreenIndex}");
+    return WillPopScope(child: Scaffold(
       body: isLoading
           ? Container(
-                child: MasonryGridView.builder(
-                  cacheExtent: 999999,
+        child: MasonryGridView.builder(
+          addAutomaticKeepAlives: true,
+          cacheExtent: 999999,
+          gridDelegate:
+          const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+          ),
+          physics: const BouncingScrollPhysics(),
+          itemCount: filesList.length,
+          itemBuilder: (context, index) {
+            if (isImageOrVideoFile(filesList[index].path) != null) {
+              if (isImageOrVideoFile(filesList[index].path)!) {
+                return Visibility(
+                  visible: widget.selectedScreenIndex == 0 ||
+                      widget.selectedScreenIndex == 1,
+                  child: InkWell(
+                    onTap: () {
+                      print("click on photo");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (context) {
+                            return DownloaderPage(
+                              filesList[index],
+                              isPreview: false,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    child: Card(
+                      elevation: 5,
+                      child: Container(
+                        margin: const EdgeInsets.all(10) +
+                            const EdgeInsets.symmetric(horizontal: 5),
+                        // height: 200,
+                        child: SizedBox(
+                          child: Image.file(filesList[index]),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              } else {
+                return Visibility(
+                  visible: widget.selectedScreenIndex == 0 ||
+                      widget.selectedScreenIndex == 2,
+                  child: InkWell(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (context) {
+                          return DownloaderPage(
+                            key: UniqueKey(),
+                            filesList[index],
+                            isPreview: false,
+                          );
+                        },
+                      ),
+                    ),
+                    child: Card(
+                      elevation: 5,
 
-                  gridDelegate:
-                     SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                         crossAxisCount: 2,
-                         
-                         ),
-                physics:  BouncingScrollPhysics(),
-                itemCount: filesList.length,
-                // crossAxisCount: 2,
-                itemBuilder: (context, index) {
-                  if (isImageOrVideoFile(filesList[index].path) != null) {
-                    if (isImageOrVideoFile(filesList[index].path)!) {
-                      return Visibility(
-                        visible: widget.selectedScreenIndex == 0 ||
-                            widget.selectedScreenIndex == 1,
-                        child: InkWell(
-                          onTap: () {
-                            print("click on photo");
-                            Navigator.push(context, MaterialPageRoute(
-                              builder: (context) {
-                                return Status_downlorder(filesList[index]);
-                              },
-                            ));
-                          },
-                          child: Card(
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Card(
                             elevation: 5,
-                            child: Container(
-                              margin: const EdgeInsets.all(10) +
-                                  const EdgeInsets.symmetric(horizontal: 5),
-                              // height: 200,
-                              child: SizedBox(
-                                child: Image.file(filesList[index]),
-                              ),
+                            margin: const EdgeInsets.all(10),
+                            child: DownloaderPage(
+                              filesList[index],
+                              isPreview: true,
                             ),
                           ),
-                        ),
-                      );
-                    } else {
-                      final videoPlayerController =
-                          VideoPlayerController.file(filesList[index]);
-                      return Visibility(
-                        visible: widget.selectedScreenIndex == 0 ||
-                            widget.selectedScreenIndex == 2,
-                        child: InkWell(
-                          onTap: () {
-                            print("Click on video");
-                          },
-                          child: Card(
-                            elevation: 5,
-                            child: Container(
-                              // margin: const EdgeInsets.all(10) +
-                              //     const EdgeInsets.symmetric(horizontal: 5),
-                              child: AspectRatio(
-                                aspectRatio:
-                                    videoPlayerController.value.aspectRatio,
-                                child: Chewie(
-                                  controller: ChewieController(
-                                    aspectRatio:
-                                        videoPlayerController.value.aspectRatio,
-                                    videoPlayerController:
-                                        videoPlayerController,
-                                    // autoInitialize: true,
-                                  ),
-                                ),
-                              ),
-                            ),
+                          const Icon(
+                            Icons.play_circle,
+                            color: Colors.white,
+                            size: 40,
                           ),
-                        ),
-                      );
-                    }
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                },
-              ),
-            )
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }
+            } else {
+              return const SizedBox.shrink();
+            }
+          },
+        ),
+      )
           : const Center(child: CircularProgressIndicator()),
+    ),
+
+      onWillPop: () async{
+        final timegap = DateTime.now().difference(pre_backpress);
+        final cantExit = timegap >= const Duration(seconds: 2);
+        pre_backpress = DateTime.now();
+        if(cantExit){
+
+          const snack = SnackBar(content: Text('Press Back button again to Exit'),duration: Duration(seconds: 1),);
+          ScaffoldMessenger.of(context).showSnackBar(snack);
+          return false;
+        }else{
+          return true;
+        }
+      },
+        // onWillPop: () {
+        //   DateTime now = DateTime.now();
+        //   if (ctime == null || now.difference(ctime) > Duration(seconds: 2)) {
+        //
+        //     ctime = now;
+        //     ScaffoldMessenger.of(context).showSnackBar(
+        //         SnackBar(content: Text('Press Back Button Again to Exit'))
+        //     ); //scaffold message, you can show Toast message too.
+        //     return Future.value(false);
+        //   }
+        //
+        //   return Future.value(true);
+        // },
+
     );
 
-//     return Scaffold(
-//       body: isLoading
-//           ? ListView.builder(
-//         physics: const BouncingScrollPhysics(),
-//         itemCount: filesList.length,
-//         itemBuilder: (context, index) {
-//           if (isImageOrVideoFile(filesList[index].path) != null) {
-//             if (isImageOrVideoFile(filesList[index].path)!) {
-//               return MasonryGridView.builder(
-// shrinkWrap: true,
-//                   gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-//                       crossAxisCount: 2,),
-//                 itemCount: filesList.length,
-//                 itemBuilder: (context, index) {
-//
-//                 return Visibility(
-//
-//                   visible: widget.selectedScreenIndex == 0 ||
-//                       widget.selectedScreenIndex == 1,
-//                   child: Container(
-//                     margin: const EdgeInsets.all(10) +
-//                         const EdgeInsets.symmetric(horizontal: 5),
-//                     // height: 200,
-//                     child: SizedBox(
-//                       child: Image.file(filesList[index ]),
-//                     ),
-//                   ),
-//                 );
-//               },);
-//             } else {
-//               return StaggeredGrid.count(
-//                   crossAxisCount: 2,
-//                   children: [Visibility(
-//                     visible: widget.selectedScreenIndex == 0 ||
-//                         widget.selectedScreenIndex == 2,
-//                     child: Card(
-//                       elevation: 5,
-//                       child: Container(
-//                         margin: const EdgeInsets.all(10) +
-//                             const EdgeInsets.symmetric(horizontal: 5),
-//                         height: 200,
-//                         child: Row(
-//                           children: [
-//                             Expanded(
-//                               child: SizedBox(
-//                                 height: 200,
-//                                 child: Chewie(
-//                                   controller: ChewieController(
-//                                     videoPlayerController:
-//                                     VideoPlayerController.file(
-//                                       filesList[index],
-//                                     ),
-//                                     autoInitialize: true,
-//                                   ),
-//                                 ),
-//                               ),
-//                             ),
-//                             const SizedBox(width: 10),
-//                             // options(index)
-//                           ],
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                   ]
-//               );
-//             }
-//           } else {
-//             return const SizedBox.shrink();
-//           }
-//         },
-//       )
-//           : const Center(child: CircularProgressIndicator()),
-//     );
   }
 
-  Future<void> forpermission() async {
+  Future<void> askPermission() async {
     final statuses = await [
       Permission.manageExternalStorage,
       Permission.storage,
@@ -227,252 +189,31 @@ class _MainHomePageState extends State<MainHomePage> {
 
     if (directory.existsSync()) {
       final item = directory.listSync();
-      print("--- --- --- ${item.length}");
 
       filesList = item.map((e) => File.fromUri(e.uri)).toList();
 
-      setState(() {
-        isLoading = true;
-      });
+      isLoading = true;
+      setState(() {});
     } else {
       print("No whatsapp");
     }
-
-    // for (var i = 0; i < filesList.length; i++) {
-    //   //   if (filesList[i].toString().contains(".mp4")  {
-    //   //     statusmp4.add(filesList[i]);
-    //   //   } else if (filesList[i].toString().contains(".jpg")) {
-    //   //     statusjpg.add(filesList[i]);
-    //   //   } else {
-    //   //     filesList.removeAt(i);
-    //   //   }
-    //   // }
-    //   // print(" Total number of status == > ${filesList.length}");
-    //   if (isImageOrVideoFile(filesList[i].path) == true) {
-    //     statusjpg.add("${filesList[i]}");
-    //   }
-    //   if (isImageOrVideoFile(filesList[i].path) == false) {
-    //     statusmp4.add("${filesList[i]}");
-    //   }
-    // }
   }
 
   bool? isImageOrVideoFile(String fileName) {
-    // Convert the file name to lowercase to make the comparison case-insensitive
     final lowerCaseFileName = fileName.toLowerCase();
 
-    // List of supported image extensions
     final imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
 
-    // List of supported video extensions
     final videoExtensions = ['.mp4', '.avi', '.mov', '.mkv', '.wmv', '.flv'];
 
-    // Get the file extension from the file name
     final fileExtension = path.extension(lowerCaseFileName);
 
-    // Check if the file extension matches any image or video extensions
     if (imageExtensions.contains(fileExtension)) {
-      return true; // It's an image file
+      return true;
     } else if (videoExtensions.contains(fileExtension)) {
-      return false; // It's a video file
+      return false;
     } else {
-      return null; // It's neither an image nor a video file
-    }
-  }
-
-  Widget options(int index) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        CircleAvatar(
-          maxRadius: 30,
-          child: IconButton(
-            onPressed: () {
-              ImageVideoDownlord(index);
-            },
-            icon: const Icon(
-              Icons.download,
-              size: 30,
-            ),
-          ),
-        ),
-        CircleAvatar(
-          maxRadius: 30,
-          child: IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.favorite,
-              size: 30,
-            ),
-          ),
-        ),
-        CircleAvatar(
-          maxRadius: 30,
-          child: IconButton(
-            onPressed: () async {
-              ShareImageVideo(index);
-            },
-            icon: const Icon(
-              Icons.share,
-              size: 30,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void ImageVideoDownlord(int index) {
-    if (isImageOrVideoFile(filesList[index].path)!) {
-      if (filesList[index].path != null) {
-        setState(() {
-          secondButtonText = 'saving in progress...';
-        });
-        GallerySaver.saveImage(filesList[index].path).then((value) {
-          secondButtonText = 'video saved!';
-        });
-      }
-    } else {
-      if (filesList[index].path != null) {
-        setState(() {
-          secondButtonText = 'saving in progress...';
-        });
-        GallerySaver.saveVideo(filesList[index].path).then((value) {
-          secondButtonText = 'video saved!';
-        });
-      }
-    }
-  }
-
-  void shareFileFromLocal(
-    String filePath,
-  ) {
-    Share.shareFiles([filePath]);
-  }
-
-  void ShareImageVideo(int index) {
-    if (isImageOrVideoFile(filesList[index].path)!) {
-      final imagePath =
-          filesList[index].path; // Replace with the actual image path
-      shareFileFromLocal(imagePath);
-    } else {
-      final imagePath =
-          filesList[index].path; // Replace with the actual image path
-      shareFileFromLocal(imagePath);
+      return null;
     }
   }
 }
-
-// itemBuilder: (context, index) {
-//   if (isImageOrVideoFile(filesList[index].path) == null) {
-//     return const SizedBox.shrink();
-//   }
-//   return Card(
-//     elevation: 5,
-//     margin: const EdgeInsets.all(10),
-//     child: Container(
-//       margin: const EdgeInsets.all(10) +
-//           const EdgeInsets.symmetric(horizontal: 5),
-//       height: 200,
-//       child: Row(
-//         children: [
-//           Expanded(
-//             flex: 4,
-//             child: widget.selectedScreenIndex == 1
-//                 ? isImageOrVideoFile(filesList[index].path)!
-//                     ? SizedBox(
-//                         child: Image.file(filesList[index]),
-//                       )
-//
-//                     // :const SizedBox.shrink( )
-//                     : const Visibility(
-//               visible: false,
-//                       child: SizedBox(
-//                           child:
-//                               Center(child: Text("this iis video")),
-//                         ),
-//                     )
-//                 : widget.selectedScreenIndex == 2
-//                     ? isImageOrVideoFile(filesList[index].path) ==
-//                             false
-//                         ? Chewie(
-//                             controller: ChewieController(
-//                               videoPlayerController:
-//                                   VideoPlayerController.file(
-//                                 filesList[index],
-//                               ),
-//                               autoPlay: true,
-//                               autoInitialize: true,
-//                             ),
-//                           )
-//
-//                         : const SizedBox(
-//                             child: Center(
-//                                 child: Text("this iis photo"),),
-//                           )
-//                     : isImageOrVideoFile(filesList[index].path) ==
-//                             true
-//                         ? SizedBox(
-//                             child: Image.file(filesList[index]),
-//                           )
-//                         : isImageOrVideoFile(
-//                                     filesList[index].path,) ==
-//                                 false
-//                             ? Chewie(
-//                                 controller: ChewieController(
-//                                   videoPlayerController:
-//                                       VideoPlayerController.file(
-//                                     filesList[index],
-//                                   ),
-//                                   autoPlay: true,
-//                                   autoInitialize: true,
-//                                 ),
-//                               )
-//                             : const SizedBox.shrink(),
-//           ),
-//           const SizedBox(width: 10),
-//
-//
-//           Column(
-//             mainAxisAlignment: MainAxisAlignment.spaceAround,
-//             children: [
-//               CircleAvatar(
-//                 maxRadius: 30,
-//                 child: IconButton(
-//                   onPressed: () {
-//                     print(
-//                         "total status ${filesList.length}  total video ${statusmp4.length} total photo ${statusjpg.length}",);
-//                   },
-//                   icon: const Icon(
-//                     Icons.download,
-//                     size: 30,
-//                   ),
-//                 ),
-//               ),
-//               CircleAvatar(
-//                 maxRadius: 30,
-//                 child: IconButton(
-//                   onPressed: () {},
-//                   icon: const Icon(
-//                     Icons.favorite,
-//                     size: 30,
-//                   ),
-//                 ),
-//               ),
-//               CircleAvatar(
-//                 maxRadius: 30,
-//                 child: IconButton(
-//                   onPressed: () {},
-//                   icon: const Icon(
-//                     Icons.share,
-//                     size: 30,
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ],
-//       ),
-//     ),
-//   );
-// },

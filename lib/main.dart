@@ -11,7 +11,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await regiterServices();
   runApp(
-    const MaterialApp(
+   const  MaterialApp(
+
       home: Homepage(),
       debugShowCheckedModeBanner: false,
     ),
