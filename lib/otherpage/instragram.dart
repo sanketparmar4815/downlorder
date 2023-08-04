@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 class InstagramPage extends StatefulWidget {
   int i;
 
-  InstagramPage(this.i);
+  InstagramPage(this.i, {super.key});
 
   @override
   State<InstagramPage> createState() => _InstagramPageState();
@@ -12,7 +12,8 @@ class InstagramPage extends StatefulWidget {
 
 class _InstagramPageState extends State<InstagramPage> {
   TextEditingController link = TextEditingController();
-  String varify = "https://www.instagram.com/reel/CvC1v3wqAxy/?igshid=MzRlODBiNWFlZA==";
+  String varify =
+      "https://www.instagram.com/reel/CvC1v3wqAxy/?igshid=MzRlODBiNWFlZA==";
 
   @override
   void initState() {
@@ -89,22 +90,29 @@ class _InstagramPageState extends State<InstagramPage> {
                         print(" iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii ");
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text(
-                                    "This url is not found in instagram",),),);
+                          const SnackBar(
+                            content: Text(
+                              "This url is not found in instagram",
+                            ),
+                          ),
+                        );
                       }
                     } else if (widget.i == 1) {
                       if (ifInstagramFacebookreels(link.text) == false) {
                         print(" ffffffffffffffffffffffffffffffffffffff ");
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content:
-                                    Text("This url is not found in facebook"),),);
+                          const SnackBar(
+                            content: Text("This url is not found in facebook"),
+                          ),
+                        );
                       }
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text("This url is not found "),),);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("This url is not found "),
+                        ),
+                      );
                     }
                   },
                   child: const Center(
@@ -125,7 +133,6 @@ class _InstagramPageState extends State<InstagramPage> {
       ),
     );
   }
-
 
   bool? ifInstagramFacebookreels(String url) {
     final instagramReelsRegex = RegExp(

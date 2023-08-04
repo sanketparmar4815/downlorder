@@ -112,3 +112,102 @@ class _OtherPageState extends State<OtherPage> {
 
 
 }
+
+
+
+/*
+(filesList1.isEmpty)
+                  ? (widget.selectedScreenIndex == 0)
+                      ? Center(
+                          child: Center(
+                            child: Container(
+                                child:
+                                    const Text("There is no photo and video")),
+                          ),
+                        )
+                      : (widget.selectedScreenIndex == 1)
+                          ? const Center(
+                              child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.image,
+                                  color: Colors.grey,
+                                  size: 150,
+                                ),
+                                Text(
+                                  "No Image Available",
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              ],
+                            ))
+                          : const Center(
+                              child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.video_call,
+                                  color: Colors.grey,
+                                  size: 150,
+                                ),
+                                Text(
+                                  "No video Available",
+                                  style: TextStyle(
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              ],
+                            ))
+
+                  : (widget.selectedScreenIndex == 1 &&
+                          containsPhotoExtension(
+                              qwer, imageExtensions1, videoExtensions1)
+                      // !filesList1.contains('.jpg' )
+
+                      )
+                      ? const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.image,
+                                color: Colors.grey,
+                                size: 150,
+                              ),
+                              Text(
+                                "No Image Available",
+                                style: TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
+                        )
+                      : (widget.selectedScreenIndex == 2 &&
+                              // !filesList1.contains(".mp4")
+                              !containsPhotoExtension(
+                                  qwer, imageExtensions1, videoExtensions1))
+                          ? const Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.video_call,
+                                    color: Colors.grey,
+                                    size: 150,
+                                  ),
+
+                                  Text(
+                                    "No video Available ",
+                                    style: TextStyle(
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+
+                                ],
+                              ),
+                            )
+                          :
+ */

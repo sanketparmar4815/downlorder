@@ -33,6 +33,12 @@ class _HomepageState extends State<Homepage> {
   String? buildSignature;
 
   @override
+  void initState() {
+    super.initState();
+    // askPermission();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final screens = <Widget>[
       MainHomePage(selectedScreenIndex: selectedstatus),
@@ -55,7 +61,9 @@ class _HomepageState extends State<Homepage> {
                 borderRadius: BorderRadius.circular(10),
                 dropdownColor: Colors.grey,
                 style: const TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold,),
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
                 items: items.map((String items) {
                   return DropdownMenuItem(
                     value: items,
@@ -93,17 +101,6 @@ class _HomepageState extends State<Homepage> {
               ),
             )
           : null,
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () async {
-      //
-      //     await locator<SharedPreferences>().setString("abc", "hello sanket");
-      //     await locator<SharedPreferences>().setString("appName","$appName" );
-      //     await locator<SharedPreferences>().setString("packageName","$packageName" );
-      //     await locator<SharedPreferences>().setString("version","$version" );
-      //     await locator<SharedPreferences>().setString("buildNumber","$buildNumber" );
-      //     await locator<SharedPreferences>().setString("buildSignature","$buildSignature" );
-      //   },
-      // ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Colors.green,
         currentIndex: selectedScreenIndex,
@@ -123,16 +120,26 @@ class _HomepageState extends State<Homepage> {
           )
         ],
       ),
-
       body: screens[selectedScreenIndex],
     );
   }
 
   void selectScreen(int index) {
     setState(() {
+      print("---------------$index");
       selectedScreenIndex = index;
     });
   }
+
+  // Future<void> askPermission() async {
+  //   await [
+  //     Permission.manageExternalStorage,
+  //   ].request().then(
+  //         (value) => setState(
+  //           () {},
+  //         ),
+  //       );
+  // }
 
 //   Future<void> forinfi() async {
 //     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -151,4 +158,16 @@ class _HomepageState extends State<Homepage> {
 //     print("${buildSignature}");
 //
 //   }
+
+// floatingActionButton: FloatingActionButton(
+//   onPressed: () async {
+//
+//     await locator<SharedPreferences>().setString("abc", "hello sanket");
+//     await locator<SharedPreferences>().setString("appName","$appName" );
+//     await locator<SharedPreferences>().setString("packageName","$packageName" );
+//     await locator<SharedPreferences>().setString("version","$version" );
+//     await locator<SharedPreferences>().setString("buildNumber","$buildNumber" );
+//     await locator<SharedPreferences>().setString("buildSignature","$buildSignature" );
+//   },
+// ),
 }
